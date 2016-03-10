@@ -24,9 +24,10 @@ class Ai(base.BaseAi):
         for e in events:
             if e.event == 'see':
                 b = (b for b in bots if b.bot_id==e.source).next()
-                print '\t\t\t\t\t',b.bot_id,bots.index(b)
+                print '\t\t\t\t\tsee'
                 b_id.append(b.bot_id)
-                response.append(actions.Cannon(bot_id=b.bot_id,x=e.pos.x,y=e.pos.y))
+                pos = self.get_far_pos(b,e.pos)
+                response.append(actions.Cannon(bot_id=b.bot_id,x=pos.x,y=pos.y))
                 # print '\t\t\tsee\t',e.pos.x,',',e.pos.y
             elif e.event == 'radarEcho':    
                 b = bots[events.index(e)]
@@ -48,3 +49,13 @@ class Ai(base.BaseAi):
 
         Ai.a = Ai.a + 1
         return response
+
+    def get_far_pos(self,bot,tar_pos):
+        dis = []
+        pos_list = list(self.get_valid_moves(bot))
+        for pos in pos_list:
+            d = (pos.x - tar_pos.x)**2 + (pos.y - tar_pos.y)**2
+            dis.append(d)
+
+        pos = pos_list[dis.index(max(dis))]
+        return pos
