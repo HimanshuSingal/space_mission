@@ -18,32 +18,33 @@ class Ai(base.BaseAi):
         Returns:
             List of actions to perform this round.
         """
-        response = []
         b_id = []
+        response = []
 
         for e in events:
             if e.event == 'see':
-                # print e.pos["x"],'\t',e.pos["y"]
-                b = (b for b in bots if b["bot_id"]==e.source)
-                idx = (idx for idx,b in bots if b["bot_id"]==e.source)
-                bots.pop(idx)
-                # c_pos = list(self.get_valid_cannons(b))
-                # print c_pos
+                b = (b for b in bots if b.bot_id==e.source).next()
+                print '\t\t\t\t\t',b.bot_id,bots.index(b)
+                b_id.append(b.bot_id)
                 response.append(actions.Cannon(bot_id=b.bot_id,x=e.pos.x,y=e.pos.y))
-            elif e.event == 'radarEcho':
-                print '\t\t\t\t\techo',e.pos.x,'\t',e.pos.y
-                b = bots.pop(-1)
-                c_pos = list(self.get_valid_cannons(b))
-                print c_pos
+                # print '\t\t\tsee\t',e.pos.x,',',e.pos.y
+            elif e.event == 'radarEcho':    
+                b = bots[events.index(e)]
+                b_id.append(b.bot_id)
                 response.append(actions.Cannon(bot_id=b.bot_id,x=e.pos.x,y=e.pos.x))
+                # print '\t\t\techo\t',e.pos.x,',',e.pos.y
             else:
                 for b in bots:
-                    move_pos = random.choice(list(self.get_valid_moves(b)))
-                    radar_pos = random.choice(list(self.get_valid_radars(b)))
-                    m = actions.Move(bot_id=b.bot_id,x=move_pos.x,y=move_pos.y)
-                    r = actions.Radar(bot_id=b.bot_id,x=radar_pos.x,y=radar_pos.y)
-                    act = r if Ai.a % 3 == 0 else m
-                    response.append(act)
+                    if b.bot_id not in b_id:
+                        move_pos = random.choice(list(self.get_valid_moves(b)))
+                        radar_pos = random.choice(list(self.get_valid_radars(b)))
+                        m = actions.Move(bot_id=b.bot_id,x=move_pos.x,y=move_pos.y)
+                        r = actions.Radar(bot_id=b.bot_id,x=radar_pos.x,y=radar_pos.y)
+                        act = m if Ai.a % 3 == 0 else r
+                        response.append(act)
+                        b_id.append(b.bot_id)
+                    else:
+                        continue
 
         Ai.a = Ai.a + 1
         return response
