@@ -1,5 +1,4 @@
-cd ~/code/space
-nodejs server/start-server.js &
+node server/start-server.js &
 sleep 2
 cd clients/python/
 source venv/bin/activate
