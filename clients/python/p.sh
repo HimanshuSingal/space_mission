@@ -1,1 +1,0 @@
-python cli.py --ai your_ai &
