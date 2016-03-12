@@ -20,14 +20,16 @@ class Ai(base.BaseAi):
         """
         b_id = []
         response = []
+        print '\t\t\t\t\t\t',len(events),' len bot',len(bots)
 
         for e in events:
             if e.event == 'see':
-                b = (b for b in bots if b.bot_id==e.source).next()
-                print '\t\t\t\t\tsee'
+                b = (b for b in bots if (b.bot_id==e.source and b.bot_id not in b_id)).next()
+                bots.remove(b)
+                print '\t\t',len(bots)
                 b_id.append(b.bot_id)
                 pos = self.get_far_pos(b,e.pos)
-                response.append(actions.Cannon(bot_id=b.bot_id,x=pos.x,y=pos.y))
+                response.append(actions.Move(bot_id=b.bot_id,x=pos.x,y=pos.y))
                 # print '\t\t\tsee\t',e.pos.x,',',e.pos.y
             elif e.event == 'radarEcho':    
                 b = bots[events.index(e)]
@@ -59,3 +61,13 @@ class Ai(base.BaseAi):
 
         pos = pos_list[dis.index(max(dis))]
         return pos
+
+    #todo
+
+    def on_see():
+
+    def on_radar_echo():
+
+    def on_detected():
+
+    def on_hit():
