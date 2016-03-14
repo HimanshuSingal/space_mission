@@ -31,6 +31,8 @@ class Ai(base.BaseAi):
         valid_moves = list(self.get_valid_moves(bot))
         far_moves = []
         for vm in valid_moves:
+            if vm.x < -14 or vm.x > 14 or vm.y < -14 or vm.y > 14:
+                continue
             if abs(vm.x - bot.pos.x) > 1 or abs(vm.y - bot.pos.y) > 1:
                 far_moves.append(vm);
         move_pos = random.choice(far_moves);
