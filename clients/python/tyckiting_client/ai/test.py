@@ -79,9 +79,6 @@ class Ai(base.BaseAi):
                         response.append(self.random_move(b, events));
                         bots.remove(b)
         
-        if len(bots) == 1:
-            self.botnumber = 1
-        
         for bot in bots:
             if not bot.alive:
                 continue    
