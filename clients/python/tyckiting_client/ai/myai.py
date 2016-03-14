@@ -19,6 +19,9 @@ class Ai(base.BaseAi):
         Returns:
             List of actions to perform this round.
         """
+        for e in events:
+            print e.__dict
+
         response = []
 
         if len(Ai.wait_list) != 0:
@@ -33,10 +36,11 @@ class Ai(base.BaseAi):
                 response.append(actions.Cannon(bot_id=b_id,x=pos.x,y=pos.y))
 
         for e in events:
-            if e.event == 'see':
+            if e.event == 'see': # if see some bots
                 b = (b for b in bots if e.source == b.bot_id).next()
                 if b != None:
                     bots.remove(b)
+                    events.remove(e)
                     response.append(self.on_see(e,b))
                 else:
                     print "I am none"
