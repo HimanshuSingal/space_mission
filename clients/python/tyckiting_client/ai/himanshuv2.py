@@ -13,7 +13,7 @@ class Ai(base.BaseAi):
     def respond(self, bot, events):
             
         for e in events:
-            if e.event == "radarEcho":
+            if e.event == "radarEcho" or e.event == "see":
                 if self.botnumber == 1:
                     radar_pos = e.pos;
                     return actions.Radar(bot_id=bot.bot_id,
