@@ -16,7 +16,7 @@ class Ai(base.BaseAi):
             if e.event == "radarEcho" or e.event == "see":
                 shooting = random.choice(self.shoot_target)
                 if self.botnumber == 0:
-                    radar_pos = e.pos;
+                    radar_pos = e.pos
                     return actions.Radar(bot_id=bot.bot_id,
                                     x=radar_pos.x,
                                     y=radar_pos.y)
@@ -78,6 +78,9 @@ class Ai(base.BaseAi):
                     if e.source == b.bot_id:
                         response.append(self.random_move(b, events));
                         bots.remove(b)
+        
+        if len(bots) == 1:
+            self.botnumber = 1
         
         for bot in bots:
             if not bot.alive:
