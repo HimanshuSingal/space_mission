@@ -8,8 +8,9 @@ class Ai(base.BaseAi):
     Dummy bot that moves randomly around the board.
     """
     
+    shoot_target = [[-1, 1], [1, -1], [0, 1], [0, -1]]
+    
     def respond(self, bot, events):
-        print self.botnumber
             
         for e in events:
             if e.event == "radarEcho":
@@ -19,31 +20,35 @@ class Ai(base.BaseAi):
                                     x=radar_pos.x,
                                     y=radar_pos.y)
                 elif self.botnumber == 0:
+                    shooting = random.choice(self.shoot_target)
                     cannon_pos = e.pos;
                     return actions.Cannon(bot_id=bot.bot_id,
-                                    x=cannon_pos.x-1,
-                                    y=cannon_pos.y+1)
+                                    x=cannon_pos.x + shooting[0],
+                                    y=cannon_pos.y + shooting[1])
                 elif self.botnumber == 2:
+                    shooting = random.choice(self.shoot_target)
                     cannon_pos = e.pos;
                     return actions.Cannon(bot_id=bot.bot_id,
-                                    x=cannon_pos.x+1,
-                                    y=cannon_pos.y-1)
-                                
-            if e.event == "detected":
-                valid_moves = list(self.get_valid_moves(bot))
-                far_moves = []
-                for vm in valid_moves:
-                    if abs(vm.x - bot.pos.x) > 1 or abs(vm.y - bot.pos.y) > 1:
-                        far_moves.append(vm);
-                move_pos = random.choice(far_moves);
-                return actions.Move(bot_id=bot.bot_id,
-                                            x=move_pos.x,
-                                            y=move_pos.y)
+                                    x=cannon_pos.x + shooting[0],
+                                    y=cannon_pos.y + shooting[1])
                                 
         radar_pos = random.choice(list(self.get_valid_radars(bot)));
         return actions.Radar(bot_id=bot.bot_id,
                                  x=radar_pos.x,
                                  y=radar_pos.y)
+                                 
+    def random_move(self, bot, events):
+        valid_moves = list(self.get_valid_moves(bot))
+        far_moves = []
+        for vm in valid_moves:
+            if vm.x < -14 or vm.x > 14 or vm.y < -14 or vm.y > 14:
+                continue
+            if abs(vm.x - bot.pos.x) > 1 or abs(vm.y - bot.pos.y) > 1:
+                far_moves.append(vm);
+        move_pos = random.choice(far_moves);
+        return actions.Move(bot_id=bot.bot_id,
+                                    x=move_pos.x,
+                                    y=move_pos.y)
     
     def move(self, bots, events):
         """
@@ -61,10 +66,23 @@ class Ai(base.BaseAi):
         
         response = []
         self.botnumber = 0
+        currentBots = []
+        
+        for e in events:
+            if e.event == "detected" or e.event == "see":
+                for b in bots:
+                    if e.bot_id == b.bot_id:
+                        response.append(self.random_move(b, events));
+                        bots.remove(b)
+            if e.event == "see":
+                for b in bots:
+                    if e.source == b.bot_id:
+                        response.append(self.random_move(b, events));
+                        bots.remove(b)
         
         for bot in bots:
             if not bot.alive:
-                continue           
+                continue    
                 
             response.append(self.respond(bot, events))
             
