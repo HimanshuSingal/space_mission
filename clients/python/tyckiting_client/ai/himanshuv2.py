@@ -8,29 +8,28 @@ class Ai(base.BaseAi):
     Dummy bot that moves randomly around the board.
     """
     
-    shoot_target = [[-1, 1], [1, -1], [0, 1], [0, -1]]
+    shoot_target = [[[-1, 1], [1, -1]], [[0, 1], [0, -1]]]
     
     def respond(self, bot, events):
             
         for e in events:
             if e.event == "radarEcho" or e.event == "see":
+                shooting = random.choice(self.shoot_target)
                 if self.botnumber == 1:
                     radar_pos = e.pos;
                     return actions.Radar(bot_id=bot.bot_id,
                                     x=radar_pos.x,
                                     y=radar_pos.y)
                 elif self.botnumber == 0:
-                    shooting = random.choice(self.shoot_target)
                     cannon_pos = e.pos;
                     return actions.Cannon(bot_id=bot.bot_id,
-                                    x=cannon_pos.x + shooting[0],
-                                    y=cannon_pos.y + shooting[1])
+                                    x=cannon_pos.x + shooting[0][0],
+                                    y=cannon_pos.y + shooting[0][1])
                 elif self.botnumber == 2:
-                    shooting = random.choice(self.shoot_target)
                     cannon_pos = e.pos;
                     return actions.Cannon(bot_id=bot.bot_id,
-                                    x=cannon_pos.x + shooting[0],
-                                    y=cannon_pos.y + shooting[1])
+                                    x=cannon_pos.x + shooting[1][0],
+                                    y=cannon_pos.y + shooting[1][1])
                                 
         radar_pos = random.choice(list(self.get_valid_radars(bot)));
         return actions.Radar(bot_id=bot.bot_id,
@@ -69,7 +68,7 @@ class Ai(base.BaseAi):
         currentBots = []
         
         for e in events:
-            if e.event == "detected" or e.event == "see":
+            if e.event == "detected":
                 for b in bots:
                     if e.bot_id == b.bot_id:
                         response.append(self.random_move(b, events));
