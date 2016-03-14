@@ -69,7 +69,7 @@ class TykitingClient():
         self.ai = self.ai_package.Ai(message.team_id, message.config)
         self.send({
             'type': 'join',
-            'teamName': self.name
+            'teamName': "Skywalker"
         })
 
     def on_start(self, message):
